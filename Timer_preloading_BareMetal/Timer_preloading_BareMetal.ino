@@ -1,0 +1,28 @@
+/*
+TICKCOUNT VALUE FOR 100 mS = 25000 (PRESCALER = 64)
+AND MAXIMUM TICKCOUNT = 65535 (2 POWER 16)
+PRELOADING VALUE = MAX TICKCOUNT - TICKCOUNT VALUE FOR SPECIFIC TIME
+PRELOADING VALUE = 65535 - 25000 = 40535
+*/
+volatile uint16_t count=0;
+ISR(TIMER1_OVF_vect){
+  TCNT1 = 40535;// RESET THE PRELOAD VALUE (INITIAL VALUE TO START COUNT)
+  count +=1;
+}
+
+void setup() {
+  TCCR1B |= (1<<1)|(1<<0);//SET PRESCALER = 64
+  TCNT1 = 40535;// TIMER COMPARE A REGISTER
+  TIMSK1 |=(1<<0);// ENABLE TIMER OVERFLOW  INTERRUPT
+  DDRB |= (1<<5);
+  PORTB |= (1<<5);
+}
+
+void loop() {
+  if((count % 1000) == 0 ){
+    PORTB ^= (1<<5);
+    count=0;
+  }
+  // put your main code here, to run repeatedly:
+
+}
